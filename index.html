@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="src/image/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <title>Planning</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="hamburger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <nav class="menuContainer">
+        <ul>
+            <li><a href="#" onclick="showTab('today')">Today</a></li>
+            <li><a href="#" onclick="showTab('old-planning')">Old planning</a></li>
+        </ul>
+    </nav>
+
+    <div id="today" class="tab-content">
+        <h1>
+            Planning
+        </h1>
+        <div id="programs"></div>
+    </div>
+
+    <div id="old-planning" class="tab-content" style="display: none">
+        <h1>Old Planning</h1>
+    
+        <div class="filters-container">
+            <select name="planning" id="planning">
+                <option value="Advanced">Advanced</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Functional">Functional</option>
+                <option value="Start">Start</option>
+            </select>
+            <input type="date" name="fecha" id="fecha" min="2021-01-01" max="2030-12-31">
+        </div>
+    
+        <h2 id="planning-date"></h2>
+    
+        <div class="nav-buttons">
+            <button id="prevBtn">⬅️ Anterior</button>
+            <button id="nextBtn">Siguiente ➡️</button>
+        </div>
+
+        <div id="planning-content"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

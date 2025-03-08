@@ -1,0 +1,14 @@
+/* colores.css */
+:root {
+    --color-primary: #000000;
+    --color-secondary: #ffffff; 
+    --color-background: #f4f4f4;      
+    --color-link: #1976D2;       
+    --color-link-hover: #0D47A1;
+    --color-button: #007BFF;
+    --color-button-hover: #4d7dd6;
+    --color-button-text: #fff;
+    --color-text-h1: #333;  
+    --color-text-h2: #007BFF;
+    --color-text: #555;
+}
