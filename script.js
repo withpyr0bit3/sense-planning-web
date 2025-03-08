@@ -34,10 +34,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function fetchPrograms() {
     const urls = [
-        "https://db.sense.fitness/api/Programa/4/2025-03-08",
-        "https://db.sense.fitness/api/Programa/3/2025-03-08",
-        "https://db.sense.fitness/api/Programa/2/2025-03-08",
-        "https://db.sense.fitness/api/Programa/1/2025-03-08"
+        "https://db.sense.fitness/api/Programa/5",
+        "https://db.sense.fitness/api/Programa/3",
+        "https://db.sense.fitness/api/Programa/2",
+        "https://db.sense.fitness/api/Programa/1"
     ];
 
     const programsContainer = document.getElementById("programs");
@@ -74,65 +74,25 @@ async function fetchPrograms() {
         }
     }
 
+    if (allPrograms.length === 0) {
+        programsContainer.innerHTML = "<p>No data</p>";
+    }
+
     document.getElementById("downloadButton").onclick = () => downloadTextFile(allPrograms);
     document.getElementById("downloadJsonButton").onclick = () => downloadJSONFile(allPrograms);
 }
 
-function downloadTextFile(data) {
-    if (!data.length) {
-        console.error("No hay datos para descargar.");
-        return;
-    }
-
-    let fecha = "sin-fecha";
-    if (data[0]?.bloques?.length > 0 && data[0].bloques[0].fecha) {
-        const fechaObj = new Date(data[0].bloques[0].fecha);
-        fecha = `${fechaObj.getDate().toString().padStart(2, '0')}/${(fechaObj.getMonth() + 1).toString().padStart(2, '0')}/${fechaObj.getFullYear()}`;
-    }
-
-    let formattedText = data.map(programa => {
-        let bloquesText = programa.bloques.map(bloque => {
-            let ejercicios = bloque.ejercicios
-                .replace(/<br>/g, '\n')
-                .replace(/<.*?>/g, '')
-                .replace(/&#\d+;/g, match => {
-                    const textarea = document.createElement("textarea");
-                    textarea.innerHTML = match;
-                    return textarea.value;
-                });
-            return `Bloque ${bloque.bloque}:\n${ejercicios}\n`;
-        }).join('\n');
-        return `${programa.nombre}\n${bloquesText}`;
-    }).join('\n');
-
-    const blob = new Blob([formattedText], { type: "text/plain" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `PlanificacionSense-${fecha}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-function downloadJSONFile(data) {
-    if (!data.length) {
-        console.error("No hay datos para descargar.");
-        return;
-    }
-
-    const fecha = new Date().toISOString().split("T")[0];
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `PlanificacionSense-${fecha}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
 let currentDate = new Date();
 let currentPlanningType = "Advanced";
+
+function formatDate(date) {
+    const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+    
+    const month = months[date.getMonth()];
+    const dayOfMonth = date.getDate().toString().padStart(2, '0'); // Asegurarse de que el día tenga dos dígitos
+    const year = date.getFullYear();
+    return `${dayOfMonth}/${month}/${year}`;
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const fechaInput = document.getElementById('fecha');
@@ -190,7 +150,11 @@ async function fetchOldPlanning() {
         if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
 
-        displayPlanningData(data);
+        if (!data || !data.bloques || data.bloques.length === 0) {
+            document.getElementById("planning-content").innerHTML = "<p>No data</p>";
+        } else {
+            displayPlanningData(data);
+        }
 
     } catch (error) {
         console.error("Error al obtener datos: ", error);
@@ -201,9 +165,17 @@ function displayPlanningData(data) {
     const planningContainer = document.getElementById("planning-content");
     planningContainer.innerHTML = "";
 
+    if (!data.bloques || data.bloques.length === 0) {
+        planningContainer.innerHTML = "<p>No data</p>";
+        return;
+    }
+
     const programDiv = document.createElement("div");
     programDiv.className = "program";
-    programDiv.innerHTML = `<h2>${data.nombre}</h2>`;
+
+    // Agregar la fecha formateada al header
+    const formattedDate = formatDate(currentDate);
+    programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`; // Agregar la fecha aquí
 
     data.bloques.forEach(bloque => {
         let ejercicios = bloque.ejercicios
