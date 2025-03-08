@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function fetchPrograms() {
     const urls = [
-        "https://db.sense.fitness/api/Programa/5",
+        "https://db.sense.fitness/api/Programa/4",
         "https://db.sense.fitness/api/Programa/3",
         "https://db.sense.fitness/api/Programa/2",
         "https://db.sense.fitness/api/Programa/1"
