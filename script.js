@@ -89,10 +89,11 @@ function formatDate(date) {
     const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     
     const month = months[date.getMonth()];
-    const dayOfMonth = date.getDate().toString().padStart(2, '0'); // Asegurarse de que el día tenga dos dígitos
-    const year = date.getFullYear();
+    const dayOfMonth = date.getUTCDate().toString().padStart(2, '0'); 
+    const year = date.getUTCFullYear(); 
     return `${dayOfMonth}/${month}/${year}`;
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const fechaInput = document.getElementById('fecha');
@@ -121,6 +122,13 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchOldPlanning();
     });
 });
+
+function parseDateFromJson(dateString) {
+    const date = new Date(dateString);
+    // Convierte la fecha a la zona horaria local
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return localDate;
+}
 
 async function fetchOldPlanning() {
     const fecha = currentDate.toISOString().split("T")[0];
@@ -153,6 +161,10 @@ async function fetchOldPlanning() {
         if (!data || !data.bloques || data.bloques.length === 0) {
             document.getElementById("planning-content").innerHTML = "<p>No data</p>";
         } else {
+            // Ajustar la fecha de los bloques para que coincidan con la zona horaria local
+            data.bloques.forEach(bloque => {
+                bloque.fecha = parseDateFromJson(bloque.fecha);
+            });
             displayPlanningData(data);
         }
 
@@ -160,6 +172,7 @@ async function fetchOldPlanning() {
         console.error("Error al obtener datos: ", error);
     }
 }
+
 
 function displayPlanningData(data) {
     const planningContainer = document.getElementById("planning-content");
@@ -175,8 +188,7 @@ function displayPlanningData(data) {
 
     // Agregar la fecha formateada al header
     const formattedDate = formatDate(currentDate);
-    programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`; // Agregar la fecha aquí
-
+    programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`;
     data.bloques.forEach(bloque => {
         let ejercicios = bloque.ejercicios
             .replace(/<br>/g, '\n')
