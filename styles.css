@@ -1,7 +1,8 @@
 @import url('colors.css');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap'); /* Fuente retro */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Orbitron", sans-serif;
     margin: 0;
     padding: 20px;
     background-color: var(--color-background);
@@ -90,20 +91,8 @@ h1 {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-}
-
-h1 img {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
-
-#downloadButton, 
-#downloadJsonButton {
-    cursor: pointer; 
-    margin-left: 10px; 
-    width: 24px; 
-    height: 24px;
+    font-size: 50px;
+    font-weight: bold;
 }
 
 #programs, #planning-content {
@@ -170,6 +159,7 @@ h1 img {
     justify-content: space-between;
     margin-top: 15px;
     margin-bottom: 15px;
+    gap: 10px; /* Asegura espacio entre los botones */
 }
 
 button {
@@ -181,23 +171,32 @@ button {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    width: 25%; /* Ancho del 45% del contenedor */
+    text-align: center;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
+button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #0056b3;
+}
+
+
 .filters-container {
     display: flex;
-    flex-direction: column; 
+    flex-direction: row; 
     align-items: center; 
-    gap: 15px; 
+    justify-content: center;  /* Centra los elementos horizontalmente */
     margin-bottom: 0px;
     width: 100%; 
     box-sizing: border-box; 
 }
 
 #planning, #fecha {
+    font-family: "Orbitron", sans-serif;
     padding: 10px;
     font-size: 16px;
     border: 2px solid var(--color-button);
@@ -208,7 +207,9 @@ button:hover {
     transition: all 0.3s ease-in-out;
     width: 200px; 
     box-sizing: border-box; 
+    margin: 0 10px; /* Asegura un pequeño espacio entre los elementos */
 }
+
 
 #planning:hover, #fecha:hover {
     border-color: var(--color-button-hover);
@@ -229,6 +230,7 @@ button:hover {
 }
 
 button {
+    font-family: "Orbitron", sans-serif;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
@@ -321,6 +323,9 @@ button:hover {
 
     button {
         width: 100%; 
+    }
+    h1 {
+        font-size: 30px;
     }
 }
 
