@@ -70,17 +70,30 @@ async function fetchPrograms() {
     ];
 
     const urls = encodedUrls.map(encodedUrl => decodeBase64(encodedUrl));
-
     const programsContainer = document.getElementById("programs");
     programsContainer.innerHTML = "";
+
     let allPrograms = [];
-    const formattedDate = formatDate(currentDate);
+
+    // Obtiene la fecha actual asegurando que sea válida
+    const currentDate = new Date();
+    // Usamos "en-US" para obtener un string parseable y forzar la zona horaria Montevideo
+    const localDateString = currentDate.toLocaleString("en-US", { timeZone: "America/Montevideo" });
+    const localDate = new Date(localDateString);
+    const dateFormatted = isNaN(localDate.getTime()) ? "Invalid date" : formatDate(localDate);
+
 
     for (let url of urls) {
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Error ${response.status}`);
+
             const data = await response.json();
+
+            if (!data.bloques || data.bloques.length === 0) {
+                document.getElementById("planning-content").innerHTML = `<p>No data available</p>`;
+                continue;
+            }
 
             allPrograms.push(data);
 
@@ -88,7 +101,7 @@ async function fetchPrograms() {
             programDiv.className = "program";
 
             const programDate = new Date(data.bloques[0].fecha);
-            const formattedProgramDate = formatDate(programDate);  
+            const formattedProgramDate = isNaN(programDate.getTime()) ? "Invalid date" : formatDate(programDate);
 
             document.querySelector("#today h1").innerHTML = `Planning - ${formattedProgramDate}`;
             programDiv.innerHTML = `<h2>${data.nombre}</h2>`;
@@ -102,22 +115,23 @@ async function fetchPrograms() {
                         textarea.innerHTML = match;
                         return textarea.value;
                     });
+
                 programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
             });
 
             programsContainer.appendChild(programDiv);
+
         } catch (error) {
-            console.error("Error al obtener datos: ", error);
+            console.error("Error in obtaining data: ", error);
         }
     }
 
     if (allPrograms.length === 0) {
-        programsContainer.innerHTML = "<p>No data</p>";
+        programsContainer.innerHTML = `<p>No data for ${dateFormatted}</p>`;
     }
-
-    document.getElementById("downloadButton").onclick = () => downloadTextFile(allPrograms);
-    document.getElementById("downloadJsonButton").onclick = () => downloadJSONFile(allPrograms);
 }
+
+
 
 async function fetchOldPlanning() {
     const fecha = currentDate.toISOString().split("T")[0]; 
@@ -149,7 +163,7 @@ async function fetchOldPlanning() {
     try {
         const response = await fetch(fullUrl);
         if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
+            throw new Error(`Error in the application: ${response.status} - ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -164,8 +178,8 @@ async function fetchOldPlanning() {
         }
 
     } catch (error) {
-        console.error("Error al obtener los datos de planificación: ", error);
-        document.getElementById("planning-content").innerHTML = `<p>Error al obtener los datos: ${error.message}</p>`;
+        console.error("Error when obtaining planning data: ", error);
+        document.getElementById("planning-content").innerHTML = `<p>Error in obtaining data: ${error.message}</p>`;
     }
 }
 
@@ -209,17 +223,15 @@ function formatDate(date) {
     const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     
     const month = months[date.getMonth()];
-    const dayOfMonth = date.getUTCDate().toString().padStart(2, '0'); 
-    const year = date.getUTCFullYear(); 
+    const dayOfMonth = date.getDate().toString().padStart(2, '0'); 
+    const year = date.getFullYear(); 
     return `${dayOfMonth}/${month}/${year}`;
 }
+
                                                                                                                                                                                                                                                                                                                                                                                                                                                     function encodeBase64(url) {return btoa(url);}
                                                                                                                                                                                                                                                                                                                                                                                                                                                     function decodeBase64(encodedUrl) {return atob(encodedUrl);}
 function parseDateFromJson(dateString) {
-    const date = new Date(dateString);
-    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return localDate;
+    return new Date(new Date(dateString).toLocaleString("es-UY", { timeZone: "America/Montevideo" }));
 }
-
 
 fetchPrograms();
