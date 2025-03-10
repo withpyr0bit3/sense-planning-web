@@ -86,17 +86,28 @@ async function fetchPrograms() {
 
     let allPrograms = [];
 
-    // Obtener la fecha actual en Montevideo (UTC-3)
-    const now = new Date();
-    const localDate = getMontevideoDate(now);
-    // Formatear la fecha en DD/MM/YYYY para mostrar en el mensaje
-    const dateFormatted = localDate.getDate().toString().padStart(2, '0') + "/" +
-                          (localDate.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                          localDate.getFullYear();
+    // Obtener la fecha actual en UTC y formatearla como YYYY-MM-DD
+    const nowUtc = new Date();
+    const utcDateFormatted = nowUtc.toISOString().split('T')[0];
+    const [year, month, day] = utcDateFormatted.split('-');
+    const formattedDate = `${day}/${month}/${year}`;
+    
+    const weekDay = nowUtc.getUTCDay() === 0 ? 7 : nowUtc.getUTCDay();
+    
+    const programNames = {
+        1: "Lower Body",
+        2: "Hybrid",
+        3: "Full Body",
+        4: "Hybrid",
+        5: "Upper Body",
+        6: "Hybrid",
+        7: "Hybrid"
+    };
 
     for (let url of urls) {
         try {
-            const response = await fetch(url);
+            const updatedUrl = `${url}/${utcDateFormatted}`;
+            const response = await fetch(updatedUrl);
             if (!response.ok) throw new Error(`Error ${response.status}`);
 
             const data = await response.json();
@@ -111,10 +122,12 @@ async function fetchPrograms() {
             const programDiv = document.createElement("div");
             programDiv.className = "program";
 
-            const programDate = new Date(data.bloques[0].fecha);
-            const formattedProgramDate = isNaN(programDate.getTime()) ? "Invalid date" : formatDate(programDate);
+            document.querySelector("#today h1").innerHTML = `Planning - ${formattedDate}`;
 
-            document.querySelector("#today h1").innerHTML = `Planning - ${formattedProgramDate}`;
+            if (url.includes("Programa/1")) {
+                data.nombre = programNames[weekDay] || "Hybrid";
+            }
+
             programDiv.innerHTML = `<h2>${data.nombre}</h2>`;
 
             data.bloques.forEach(bloque => {
@@ -131,14 +144,13 @@ async function fetchPrograms() {
             });
 
             programsContainer.appendChild(programDiv);
-
         } catch (error) {
             console.error("Error in obtaining data: ", error);
         }
     }
 
     if (allPrograms.length === 0) {
-        programsContainer.innerHTML = `<p>No data for ${dateFormatted}</p>`;
+        programsContainer.innerHTML = `<p>No data for ${formattedDate}</p>`;
     }
 }
 
