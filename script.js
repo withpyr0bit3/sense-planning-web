@@ -1,5 +1,10 @@
-let currentDate = new Date();
+let currentDate = new Date(); // Se actualizará según la fecha seleccionada
 let currentPlanningType = "Advanced";
+
+// Función auxiliar para obtener la fecha en la zona horaria de Montevideo
+function getMontevideoDate(date) {
+    return new Date(date.toLocaleString("en-US", { timeZone: "America/Montevideo" }));
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const hamburger = document.querySelector(".hamburger");
@@ -7,7 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const menuLinks = document.querySelectorAll(".menu a");
 
     const fechaInput = document.getElementById('fecha');
-    const today = new Date().toISOString().split("T")[0];
+    // Obtener la fecha actual en Montevideo y formatearla como "YYYY-MM-DD" para el input type="date"
+    const now = new Date();
+    const localDate = getMontevideoDate(now);
+    const today = localDate.getFullYear() + "-" +
+                  (localDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
+                  localDate.getDate().toString().padStart(2, '0');
     fechaInput.value = today;
 
     hamburger.addEventListener("click", function () {
@@ -26,7 +36,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById('fecha').addEventListener('change', (e) => {
-        currentDate = new Date(e.target.value);
+        // Parsear el valor del input como fecha en Montevideo (se agrega la hora y el offset para UTC-3)
+        currentDate = new Date(e.target.value + "T00:00:00-03:00");
         fetchOldPlanning();
     });
 
@@ -75,13 +86,13 @@ async function fetchPrograms() {
 
     let allPrograms = [];
 
-    // Obtiene la fecha actual asegurando que sea válida
-    const currentDate = new Date();
-    // Usamos "en-US" para obtener un string parseable y forzar la zona horaria Montevideo
-    const localDateString = currentDate.toLocaleString("en-US", { timeZone: "America/Montevideo" });
-    const localDate = new Date(localDateString);
-    const dateFormatted = isNaN(localDate.getTime()) ? "Invalid date" : formatDate(localDate);
-
+    // Obtener la fecha actual en Montevideo (UTC-3)
+    const now = new Date();
+    const localDate = getMontevideoDate(now);
+    // Formatear la fecha en DD/MM/YYYY para mostrar en el mensaje
+    const dateFormatted = localDate.getDate().toString().padStart(2, '0') + "/" +
+                          (localDate.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                          localDate.getFullYear();
 
     for (let url of urls) {
         try {
@@ -131,10 +142,12 @@ async function fetchPrograms() {
     }
 }
 
-
-
 async function fetchOldPlanning() {
-    const fecha = currentDate.toISOString().split("T")[0]; 
+    // Convertir currentDate a la zona horaria de Montevideo y formatear como "YYYY-MM-DD" para la URL
+    const montevideoDate = getMontevideoDate(currentDate);
+    const fecha = montevideoDate.getFullYear() + "-" +
+                  (montevideoDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
+                  montevideoDate.getDate().toString().padStart(2, '0');
 
     let planningNumber;
     switch (currentPlanningType) {
@@ -155,9 +168,7 @@ async function fetchOldPlanning() {
     }
 
     const baseUrl = `aHR0cHM6Ly9kYi5zZW5zZS5maXRuZXNzL2FwaS9Qcm9ncmFtYS8=`;
-
     const decodedUrl = decodeBase64(baseUrl);
-
     const fullUrl = `${decodedUrl}${planningNumber}/${fecha}`;
 
     try {
@@ -213,23 +224,27 @@ function displayPlanningData(data) {
     planningContainer.appendChild(programDiv);
 }
 
+
 function updateDateInput() {
     const fechaInput = document.getElementById('fecha');
-    fechaInput.value = currentDate.toISOString().split("T")[0];
+    const montevideoDate = getMontevideoDate(currentDate);
+    const year = montevideoDate.getFullYear();
+    const month = (montevideoDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = montevideoDate.getDate().toString().padStart(2, '0');
+    fechaInput.value = `${year}-${month}-${day}`;
 }
 
 
 function formatDate(date) {
-    const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-    
-    const month = months[date.getMonth()];
-    const dayOfMonth = date.getDate().toString().padStart(2, '0'); 
-    const year = date.getFullYear(); 
-    return `${dayOfMonth}/${month}/${year}`;
+    // Formatea la fecha en "DD/MM/YYYY" usando la zona horaria de Montevideo
+    const local = getMontevideoDate(date);
+    const day = local.getDate().toString().padStart(2, '0');
+    const month = (local.getMonth() + 1).toString().padStart(2, '0');
+    const year = local.getFullYear();
+    return `${day}/${month}/${year}`;
 }
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    function encodeBase64(url) {return btoa(url);}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    function decodeBase64(encodedUrl) {return atob(encodedUrl);}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        function encodeBase64(url) {return btoa(url);}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        function decodeBase64(encodedUrl) {return atob(encodedUrl);}
 function parseDateFromJson(dateString) {
     return new Date(new Date(dateString).toLocaleString("es-UY", { timeZone: "America/Montevideo" }));
 }
