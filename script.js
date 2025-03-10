@@ -156,7 +156,7 @@ async function fetchPrograms() {
 
 async function fetchOldPlanning() {
     // Convertir currentDate a la zona horaria de Montevideo y formatear como "YYYY-MM-DD" para la URL
-    const montevideoDate = getMontevideoDate(currentDate);
+    const montevideoDate = getMontevideoDate(currentDate);  // Aseguramos que la fecha esté ajustada
     const fecha = montevideoDate.getFullYear() + "-" +
                   (montevideoDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
                   montevideoDate.getDate().toString().padStart(2, '0');
@@ -197,7 +197,10 @@ async function fetchOldPlanning() {
             data.bloques.forEach(bloque => {
                 bloque.fecha = parseDateFromJson(bloque.fecha);
             });
-            displayPlanningData(data);
+            
+            // Pasamos la fecha ajustada a Montevideo
+            const selectedDate = montevideoDate;  // Fecha ya ajustada a Montevideo
+            displayPlanningData(data, fullUrl, selectedDate); // Pasamos la fecha ajustada
         }
 
     } catch (error) {
@@ -206,21 +209,45 @@ async function fetchOldPlanning() {
     }
 }
 
-function displayPlanningData(data) {
+
+function displayPlanningData(data, fullUrl, selectedDate = null) {
     const planningContainer = document.getElementById("planning-content");
     planningContainer.innerHTML = "";
 
-    if (!data.bloques || data.bloques.length === 0) {
+    if (!data || !data.bloques || data.bloques.length === 0) {
         planningContainer.innerHTML = "<p>No data</p>";
         return;
     }
 
+    // Usamos selectedDate (ajustada a Montevideo) si está disponible
+    const now = selectedDate ? selectedDate : new Date();
+    const localDate = getMontevideoDate(now); // Asegurándonos de que la fecha esté ajustada a Montevideo
+    const weekDay = localDate.getDay() === 0 ? 7 : localDate.getDay();
+
+    const programNames = {
+        1: "LOWER BODY",
+        2: "HYBRID",
+        3: "FULL BODY",
+        4: "HYBRID",
+        5: "UPPER BODY",
+        6: "HYBRID",
+        7: "HYBRID"
+    };
+
     const programDiv = document.createElement("div");
     programDiv.className = "program";
 
-    const formattedDate = formatDate(currentDate);
-    programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`;
+    const formattedDate = formatDate(localDate);
+    
+    // Asignamos el nombre del programa dependiendo del día
+    if (fullUrl.includes("Programa/1")) {
+        data.nombre = programNames[weekDay] || "HYBRID";
+        programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`;
+    } else {
+        programDiv.innerHTML = `<h2>${data.nombre} - ${formattedDate}</h2>`;
+    }
 
+    // Procesamos los bloques y los ejercicios
     data.bloques.forEach(bloque => {
         let ejercicios = bloque.ejercicios
             .replace(/<br>/g, '\n')
@@ -233,8 +260,18 @@ function displayPlanningData(data) {
         programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
     });
 
+    // Añadimos el contenido al contenedor
     planningContainer.appendChild(programDiv);
 }
+
+
+
+
+
+function getMontevideoDate(date) {
+    return new Date(date.toLocaleString("en-US", { timeZone: "America/Montevideo" }));
+}
+
 
 
 function updateDateInput() {
