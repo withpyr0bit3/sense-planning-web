@@ -88,6 +88,7 @@ async function fetchPrograms() {
 
     // Obtener la fecha actual en UTC y formatearla como YYYY-MM-DD
     const nowUtc = new Date();
+    nowUtc.setHours(nowUtc.getHours() - 3);
     const utcDateFormatted = nowUtc.toISOString().split('T')[0];
     const [year, month, day] = utcDateFormatted.split('-');
     const formattedDate = `${day}/${month}/${year}`;
@@ -265,13 +266,9 @@ function displayPlanningData(data, fullUrl, selectedDate = null) {
 }
 
 
-
-
-
 function getMontevideoDate(date) {
     return new Date(date.toLocaleString("en-US", { timeZone: "America/Montevideo" }));
 }
-
 
 
 function updateDateInput() {
