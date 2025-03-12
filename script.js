@@ -56,28 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     
-    const img = document.createElement("img");
-    img.width = 24;
-    img.height = 24;
-    darkModeToggle.appendChild(img);
-
-    const updateIcon = () => {
-        if (body.classList.contains("dark-mode")) {
-            img.src = "src/image/sun.png";
-        } else {
-            img.src = "src/image/moon.png";
-        }
-    };
-
     const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     if (systemDarkMode || localStorage.getItem("dark-mode") === "enabled") {
         body.classList.add("dark-mode");
+        darkModeToggle.checked = true;
     }
 
-    updateIcon();
-
-    darkModeToggle.addEventListener("click", () => {
+    darkModeToggle.addEventListener("change", () => {
         body.classList.toggle("dark-mode");
 
         if (body.classList.contains("dark-mode")) {
@@ -85,21 +71,18 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             localStorage.setItem("dark-mode", "disabled");
         }
-        
-        updateIcon();
     });
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         if (e.matches) {
             body.classList.add("dark-mode");
+            darkModeToggle.checked = true;
         } else {
             body.classList.remove("dark-mode");
+            darkModeToggle.checked = false;
         }
-        updateIcon();
     });
 });
-
-
 
 
 function showTab(tabId) {

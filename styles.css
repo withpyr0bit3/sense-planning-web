@@ -9,23 +9,57 @@ body {
     padding: 20px;
     background-color: var(--color-background);
 }
+/* aaa */
 
-#darkModeToggle {
-    position: absolute;
-    width: 35px;
-    height: 35px;
-    background: transparent;
-    color: var(--color-button-text);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 100;
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 60px;
 }
 
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+    background-image: url("src/image/moon.png");
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateY(-26px);
+    background-image: url("src/image/sun.png");
+}
 
 h1 {
     text-align: center;
