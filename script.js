@@ -56,27 +56,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     const body = document.body;
     
-    // Crea la imagen dentro del botón
     const img = document.createElement("img");
-    img.width = 24; // Ajusta el tamaño según necesites
+    img.width = 24;
     img.height = 24;
     darkModeToggle.appendChild(img);
 
-    // Función para actualizar la imagen
     const updateIcon = () => {
         if (body.classList.contains("dark-mode")) {
-            img.src = "src/image/sun.png"; // Modo oscuro, mostrar sol
+            img.src = "src/image/sun.png";
         } else {
-            img.src = "src/image/moon.png"; // Modo claro, mostrar luna
+            img.src = "src/image/moon.png";
         }
     };
 
-    // Verifica si el usuario tenía activado el modo oscuro previamente
-    if (localStorage.getItem("dark-mode") === "enabled") {
+    const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (systemDarkMode || localStorage.getItem("dark-mode") === "enabled") {
         body.classList.add("dark-mode");
     }
-    
-    updateIcon(); // Aplica la imagen correcta al cargar
+
+    updateIcon();
 
     darkModeToggle.addEventListener("click", () => {
         body.classList.toggle("dark-mode");
@@ -87,9 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("dark-mode", "disabled");
         }
         
-        updateIcon(); // Cambia la imagen después de hacer clic
+        updateIcon();
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (e.matches) {
+            body.classList.add("dark-mode");
+        } else {
+            body.classList.remove("dark-mode");
+        }
+        updateIcon();
     });
 });
+
 
 
 
