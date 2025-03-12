@@ -162,7 +162,8 @@ async function fetchPrograms() {
             const data = await response.json();
 
             if (!data.bloques || data.bloques.length === 0) {
-                document.getElementById("planning-content").innerHTML = `<p>No data available</p>`;
+                document.getElementById("planning-content").innerHTML = `<p style="color: var(--color-text);">No data available</p>`;
+
                 continue;
             }
 
@@ -199,7 +200,8 @@ async function fetchPrograms() {
     }
 
     if (allPrograms.length === 0) {
-        programsContainer.innerHTML = `<p>No data for ${formattedDate}</p>`;
+
+        programsContainer.innerHTML = `<p style="color: var(--color-text);">No data for ${formattedDate}</p>`;
     }
 }
 
@@ -239,7 +241,7 @@ async function fetchOldPlanning() {
         const data = await response.json();
 
         if (!data || !data.bloques || data.bloques.length === 0) {
-            document.getElementById("planning-content").innerHTML = "<p>No data available</p>";
+            document.getElementById("planning-content").innerHTML = `<p style="color: var(--color-text);">No data available</p>`;
         } else {
             data.bloques.forEach(bloque => {
                 bloque.fecha = parseDateFromJson(bloque.fecha);
@@ -252,7 +254,7 @@ async function fetchOldPlanning() {
 
     } catch (error) {
         console.error("Error when obtaining planning data: ", error);
-        document.getElementById("planning-content").innerHTML = `<p>Error in obtaining data: ${error.message}</p>`;
+        document.getElementById("planning-content").innerHTML = `<p style="color: var(--color-text);" >Error in obtaining data: ${error.message}</p>`;
     }
 }
 
@@ -262,7 +264,7 @@ function displayPlanningData(data, fullUrl, selectedDate = null) {
     planningContainer.innerHTML = "";
 
     if (!data || !data.bloques || data.bloques.length === 0) {
-        planningContainer.innerHTML = "<p>No data</p>";
+        programsContainer.innerHTML = `<p style="color: var(--color-text);">No data</p>`;
         return;
     }
 
