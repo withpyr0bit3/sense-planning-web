@@ -11,22 +11,24 @@
 </head>
 
 <body>
+
+    <button id="darkModeToggle"></button>
+
     <div class="hamburger" onclick="toggleMenu()">
         <div></div>
         <div></div>
         <div></div>
     </div>
+
     <nav class="menuContainer">
         <ul>
             <li><a href="#" onclick="showTab('today')">Today</a></li>
             <li><a href="#" onclick="showTab('old-planning')">Old planning</a></li>
         </ul>
     </nav>
-
+    
     <div id="today" class="tab-content">
-        <h1>
-            Planning
-        </h1>
+        <h1>Planning</h1>
         <div id="programs"></div>
     </div>
 

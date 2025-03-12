@@ -10,6 +10,23 @@ body {
     background-color: var(--color-background);
 }
 
+#darkModeToggle {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: transparent;
+    color: var(--color-button-text);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 100;
+}
+
+
 h1 {
     text-align: center;
     color: var(--color-text-h1);
@@ -199,6 +216,7 @@ button:focus {
     gap: 10px;
 }
 
+
 /* Media Queries */
 @media (max-width: 650px) {
     body {
@@ -253,6 +271,10 @@ button:focus {
 
     .hamburger {
         display: flex;
+    }
+
+    .dark-mode .hamburger {
+        background-color: var(--color-secondary); /* Fondo oscuro en modo oscuro */
     }
 
     .menuContainer.active {

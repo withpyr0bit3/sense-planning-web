@@ -15,9 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Obtener la fecha actual en Montevideo y formatearla como "YYYY-MM-DD" para el input type="date"
     const now = new Date();
     const localDate = getMontevideoDate(now);
-    const today = localDate.getFullYear() + "-" +
-                  (localDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
-                  localDate.getDate().toString().padStart(2, '0');
+    const today = localDate.getFullYear() + "-" +(localDate.getMonth() + 1).toString().padStart(2, '0') + "-" + localDate.getDate().toString().padStart(2, '0');
     fechaInput.value = today;
 
     hamburger.addEventListener("click", function () {
@@ -53,6 +51,47 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchOldPlanning();
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const body = document.body;
+    
+    // Crea la imagen dentro del botón
+    const img = document.createElement("img");
+    img.width = 24; // Ajusta el tamaño según necesites
+    img.height = 24;
+    darkModeToggle.appendChild(img);
+
+    // Función para actualizar la imagen
+    const updateIcon = () => {
+        if (body.classList.contains("dark-mode")) {
+            img.src = "src/image/sun.png"; // Modo oscuro, mostrar sol
+        } else {
+            img.src = "src/image/moon.png"; // Modo claro, mostrar luna
+        }
+    };
+
+    // Verifica si el usuario tenía activado el modo oscuro previamente
+    if (localStorage.getItem("dark-mode") === "enabled") {
+        body.classList.add("dark-mode");
+    }
+    
+    updateIcon(); // Aplica la imagen correcta al cargar
+
+    darkModeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+
+        if (body.classList.contains("dark-mode")) {
+            localStorage.setItem("dark-mode", "enabled");
+        } else {
+            localStorage.setItem("dark-mode", "disabled");
+        }
+        
+        updateIcon(); // Cambia la imagen después de hacer clic
+    });
+});
+
+
 
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => {
@@ -158,9 +197,7 @@ async function fetchPrograms() {
 async function fetchOldPlanning() {
     // Convertir currentDate a la zona horaria de Montevideo y formatear como "YYYY-MM-DD" para la URL
     const montevideoDate = getMontevideoDate(currentDate);  // Aseguramos que la fecha esté ajustada
-    const fecha = montevideoDate.getFullYear() + "-" +
-                  (montevideoDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
-                  montevideoDate.getDate().toString().padStart(2, '0');
+    const fecha = montevideoDate.getFullYear() + "-" + (montevideoDate.getMonth() + 1).toString().padStart(2, '0') + "-" + montevideoDate.getDate().toString().padStart(2, '0');
 
     let planningNumber;
     switch (currentPlanningType) {
