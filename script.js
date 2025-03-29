@@ -166,21 +166,18 @@ async function fetchPrograms() {
             data.bloques.forEach(bloque => {
                 let tempDiv = document.createElement("div");
                 tempDiv.innerHTML = bloque.ejercicios;
-            
+                
                 let ejercicios = tempDiv.innerHTML
                     .replace(/<br\s*\/?>/gi, '\n')
-                    .replace(/<\/(p|div)>/gi, '\n')
-                    .replace(/<[^>]+>/g, '')
-                    .replace(/&#\d+;/g, match => {
-                        const textarea = document.createElement("textarea");
-                        textarea.innerHTML = match;
-                        return textarea.value;
-                    })
-                    .replace(/\n{2,}/g, '\n')
-                    .trim();
+                    .replace(/<\/?(div|p|span)>/gi, '\n') 
+                    .replace(/&nbsp;/g, ' ') 
+                    .replace(/\n{2,}/g, '\n') 
+                    .trim();  
             
                 programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
             });
+            
+            
             
 
             programsContainer.appendChild(programDiv);
@@ -289,18 +286,13 @@ function displayPlanningData(data, fullUrl, selectedDate = null) {
     data.bloques.forEach(bloque => {
         let tempDiv = document.createElement("div");
         tempDiv.innerHTML = bloque.ejercicios;
-    
+        
         let ejercicios = tempDiv.innerHTML
-            .replace(/<br\s*\/?>/gi, '\n')
-            .replace(/<\/(p|div)>/gi, '\n')
-            .replace(/<[^>]+>/g, '')
-            .replace(/&#\d+;/g, match => {
-                const textarea = document.createElement("textarea");
-                textarea.innerHTML = match;
-                return textarea.value;
-            })
-            .replace(/\n{2,}/g, '\n')
-            .trim();
+            .replace(/<br\s*\/?>/gi, '\n')  // Reemplazar <br> por saltos de línea
+            .replace(/<\/?(div|p|span)>/gi, '\n')  // Reemplazar <div>, <p>, <span> con salto de línea
+            .replace(/&nbsp;/g, ' ')  // Convertir espacios codificados en espacios normales
+            .replace(/\n{2,}/g, '\n')  // Evitar múltiples saltos de línea seguidos
+            .trim();  // Eliminar espacios en blanco al inicio y final
     
         programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
     });
@@ -314,7 +306,6 @@ function displayPlanningData(data, fullUrl, selectedDate = null) {
 function getMontevideoDate(date) {
     return new Date(date.toLocaleString("en-US", { timeZone: "America/Montevideo" }));
 }
-
 
 function updateDateInput() {
     const fechaInput = document.getElementById('fecha');
