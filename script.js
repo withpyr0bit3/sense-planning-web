@@ -164,17 +164,24 @@ async function fetchPrograms() {
             programDiv.innerHTML = `<h2>${data.nombre}</h2>`;
 
             data.bloques.forEach(bloque => {
-                let ejercicios = bloque.ejercicios
-                    .replace(/<br>/g, '\n')
-                    .replace(/<.*?>/g, '')
+                let tempDiv = document.createElement("div");
+                tempDiv.innerHTML = bloque.ejercicios;
+            
+                let ejercicios = tempDiv.innerHTML
+                    .replace(/<br\s*\/?>/gi, '\n')
+                    .replace(/<\/(p|div)>/gi, '\n')
+                    .replace(/<[^>]+>/g, '')
                     .replace(/&#\d+;/g, match => {
                         const textarea = document.createElement("textarea");
                         textarea.innerHTML = match;
                         return textarea.value;
-                    });
-
+                    })
+                    .replace(/\n{2,}/g, '\n')
+                    .trim();
+            
                 programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
             });
+            
 
             programsContainer.appendChild(programDiv);
         } catch (error) {
@@ -230,9 +237,8 @@ async function fetchOldPlanning() {
                 bloque.fecha = parseDateFromJson(bloque.fecha);
             });
             
-            // Pasamos la fecha ajustada a Montevideo
-            const selectedDate = montevideoDate;  // Fecha ya ajustada a Montevideo
-            displayPlanningData(data, fullUrl, selectedDate); // Pasamos la fecha ajustada
+            const selectedDate = montevideoDate;  
+            displayPlanningData(data, fullUrl, selectedDate);
         }
 
     } catch (error) {
@@ -281,16 +287,24 @@ function displayPlanningData(data, fullUrl, selectedDate = null) {
 
     // Procesamos los bloques y los ejercicios
     data.bloques.forEach(bloque => {
-        let ejercicios = bloque.ejercicios
-            .replace(/<br>/g, '\n')
-            .replace(/<.*?>/g, '')
+        let tempDiv = document.createElement("div");
+        tempDiv.innerHTML = bloque.ejercicios;
+    
+        let ejercicios = tempDiv.innerHTML
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/(p|div)>/gi, '\n')
+            .replace(/<[^>]+>/g, '')
             .replace(/&#\d+;/g, match => {
                 const textarea = document.createElement("textarea");
                 textarea.innerHTML = match;
                 return textarea.value;
-            });
+            })
+            .replace(/\n{2,}/g, '\n')
+            .trim();
+    
         programDiv.innerHTML += `<p><strong>Bloque ${bloque.bloque}:</strong><br>${ejercicios.replace(/\n/g, '<br>')}</p>`;
     });
+    
 
     // Añadimos el contenido al contenedor
     planningContainer.appendChild(programDiv);
